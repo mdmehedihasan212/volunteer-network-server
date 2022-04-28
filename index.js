@@ -18,7 +18,9 @@ async function run() {
     try {
         await client.connect();
         const volunteerCollection = client.db('VolunteerNetwork').collection('volunteer');
+        const eventCollection = client.db('VolunteerNetwork').collection('event');
 
+        // GET ALL VOLUNTEER
         app.get('/volunteer', async (req, res) => {
             const query = {};
             const cursor = volunteerCollection.find(query);
@@ -26,11 +28,29 @@ async function run() {
             res.send(volunteers);
         })
 
+        // GET SINGLE VOLUNTEER
         app.get('/volunteer/:id', async (req, res) => {
+            const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const volunteer = await volunteerCollection.findOne(query);
             res.send(volunteer);
         })
+
+        // POST SINGLE USER
+        app.post('/event', async (req, res) => {
+            const add = req.body;
+            const result = await eventCollection.insertOne(add);
+            res.send(result)
+        })
+
+        // GET ALL POST
+        app.get('/event', async (req, res) => {
+            const query = {};
+            const cursor = eventCollection.find(query);
+            const event = await cursor.toArray();
+            res.send(event);
+        })
+
     }
     finally {
 
